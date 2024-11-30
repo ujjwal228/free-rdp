@@ -1,0 +1,29 @@
+name: Free RDP
+
+on:
+  workflow_dispatch:
+
+jobs:
+  RDP-Setup:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up RDP
+      run: |
+        echo "Updating system and installing RDP tools..."
+        sudo apt-get update
+        sudo apt-get install -y xrdp xfce4 xfce4-goodies
+        echo xfce4-session >~/.xsession
+        sudo service xrdp restart
+        echo "RDP Setup Complete!"
+    - name: Generate User Credentials
+      run: |
+        echo "Creating a new user for RDP access..."
+        sudo adduser rdpuser --gecos "RDP User,,," --disabled-password
+        echo "rdpuser:rdppassword" | sudo chpasswd
+        echo "Username: rdpuser, Password: rdppassword"
+    - name: Display Connection Info
+      run: |
+        echo "Fetching public IP address..."
+        curl -s http://ipinfo.io/ip > public_ip.txt
+        echo "Public IP Address:"
+        cat public_ip.txt
